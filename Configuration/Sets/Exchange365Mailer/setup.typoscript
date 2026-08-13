@@ -1,0 +1,3 @@
+# The site settings of this set are named exactly like the TypoScript constants
+# of the legacy static template, so the existing mapping file is reused verbatim.
+@import 'EXT:ok_exchange365_mailer/Configuration/TypoScript/setup.typoscript'

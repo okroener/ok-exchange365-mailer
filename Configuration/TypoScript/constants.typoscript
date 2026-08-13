@@ -1,17 +1,20 @@
 # customsubcategory=cCredentials=Credentials
 # customsubcategory=cEmail=Email Settings
 
-# cat=exchange365mailer/cCredentials/c0; type=string; label=Tenant ID: OAuth2 Tenant ID for connecting to Exchange365
-plugin.tx_okexchange365mailer.settings.exchange365.tenantId = your-tenant-id
+# Empty values mean "not configured here" and fall back to the corresponding
+# $GLOBALS['TYPO3_CONF_VARS']['MAIL']['transport_exchange365_*'] setting.
 
-# cat=exchange365mailer/cCredentials/c1; type=string; label=Client ID: OAuth2 Client ID for connecting to Exchange365
-plugin.tx_okexchange365mailer.settings.exchange365.clientId = your-client-id
+# cat=exchange365mailer/cCredentials/c0; type=string; label=Tenant ID: OAuth2 Tenant ID for connecting to Exchange365. Empty falls back to transport_exchange365_tenantId.
+plugin.tx_okexchange365mailer.settings.exchange365.tenantId =
 
-# cat=exchange365mailer/cCredentials/c2; type=string; label=Client Secret: OAuth2 Client Secret for connecting to Exchange365
-plugin.tx_okexchange365mailer.settings.exchange365.clientSecret = your-client-secret
+# cat=exchange365mailer/cCredentials/c1; type=string; label=Client ID: OAuth2 Client ID for connecting to Exchange365. Empty falls back to transport_exchange365_clientId.
+plugin.tx_okexchange365mailer.settings.exchange365.clientId =
 
-# cat=exchange365mailer/cEmail/e0; type=string; label=FromEmail: The Email used to send from Exchange365
-plugin.tx_okexchange365mailer.settings.exchange365.fromEmail = sender-email
+# cat=exchange365mailer/cCredentials/c2; type=string; label=Client Secret: OAuth2 Client Secret for connecting to Exchange365. Empty falls back to transport_exchange365_clientSecret.
+plugin.tx_okexchange365mailer.settings.exchange365.clientSecret =
+
+# cat=exchange365mailer/cEmail/e0; type=string; label=FromEmail: The Email used to send from Exchange365. Empty falls back to transport_exchange365_fromEmail.
+plugin.tx_okexchange365mailer.settings.exchange365.fromEmail =
 
 # cat=exchange365mailer/cEmail/e1; type=string; label=Graph Sender User ID: Optional Microsoft Graph mailbox/user ID used for the API call (Send As / Send On Behalf scenarios). Defaults to fromEmail when empty.
 plugin.tx_okexchange365mailer.settings.exchange365.graphSenderUserId =

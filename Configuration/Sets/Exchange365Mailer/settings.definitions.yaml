@@ -1,0 +1,52 @@
+categories:
+  exchange365Mailer:
+    label: 'Exchange 365 Mailer'
+  exchange365Mailer.credentials:
+    label: 'Credentials'
+    parent: exchange365Mailer
+  exchange365Mailer.email:
+    label: 'Email Settings'
+    parent: exchange365Mailer
+
+settings:
+  plugin.tx_okexchange365mailer.settings.exchange365.tenantId:
+    label: 'Tenant ID'
+    description: 'OAuth2 tenant ID of the Microsoft Entra ID directory. Leave empty to use the global mail setting transport_exchange365_tenantId.'
+    type: string
+    default: ''
+    category: exchange365Mailer.credentials
+
+  plugin.tx_okexchange365mailer.settings.exchange365.clientId:
+    label: 'Client ID'
+    description: 'OAuth2 client ID (application ID) of the registered Entra ID app. Leave empty to use the global mail setting transport_exchange365_clientId.'
+    type: string
+    default: ''
+    category: exchange365Mailer.credentials
+
+  plugin.tx_okexchange365mailer.settings.exchange365.clientSecret:
+    label: 'Client Secret'
+    description: 'OAuth2 client secret of the registered Entra ID app. Stored as plaintext in config/sites/<identifier>/settings.yaml — prefer the environment variable TYPO3_CONF_VARS__MAIL__transport_exchange365_clientSecret and leave this empty, which falls back to the global mail setting transport_exchange365_clientSecret.'
+    type: string
+    default: ''
+    category: exchange365Mailer.credentials
+
+  plugin.tx_okexchange365mailer.settings.exchange365.fromEmail:
+    label: 'From Email'
+    description: 'Email address the messages are sent from. Leave empty to use the global mail setting transport_exchange365_fromEmail, then MAIL/defaultMailFromAddress.'
+    type: string
+    default: ''
+    category: exchange365Mailer.email
+
+  plugin.tx_okexchange365mailer.settings.exchange365.graphSenderUserId:
+    label: 'Graph Sender User ID'
+    description: 'Optional Microsoft Graph mailbox/user ID used for the /users/{id}/sendMail call, for Send As / Send On Behalf scenarios. The visible From header is unaffected. Leave empty to use the global mail setting transport_exchange365_graphSenderUserId, then the From address.'
+    type: string
+    default: ''
+    category: exchange365Mailer.email
+
+  plugin.tx_okexchange365mailer.settings.exchange365.saveToSentItems:
+    label: 'Save sent emails'
+    description: 'Store a copy of every sent message in the mailbox Sent Items folder.'
+    type: bool
+    default: true
+    category: exchange365Mailer.email
