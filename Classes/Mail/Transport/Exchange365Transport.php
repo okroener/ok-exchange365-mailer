@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace OliverKroener\OkExchange365\Mail\Transport;
 
 use Microsoft\Graph\Generated\Users\Item\SendMail\SendMailPostRequestBody;
@@ -10,9 +12,9 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Mailer\SentMessage;
 use Symfony\Component\Mailer\Transport\AbstractTransport;
+use TYPO3\CMS\Core\Adapter\EventDispatcherAdapter;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 class Exchange365Transport extends AbstractTransport
 {
@@ -31,9 +33,7 @@ class Exchange365Transport extends AbstractTransport
      */
     public function __construct(array $mailSettings, ?EventDispatcherInterface $dispatcher = null, ?LoggerInterface $logger = null)
     {
-        $eventDispatcherAdapter = GeneralUtility::makeInstance(
-            \TYPO3\CMS\Core\Adapter\EventDispatcherAdapter::class
-        );
+        $eventDispatcherAdapter = GeneralUtility::makeInstance(EventDispatcherAdapter::class);
 
         parent::__construct($dispatcher ?? $eventDispatcherAdapter);
 
@@ -61,9 +61,9 @@ class Exchange365Transport extends AbstractTransport
 
             // Setup authentication context
             $tokenRequestContext = new ClientCredentialContext(
-                $conf['tenantId'],
-                $conf['clientId'],
-                $conf['clientSecret']
+                (string)$conf['tenantId'],
+                (string)$conf['clientId'],
+                (string)$conf['clientSecret']
             );
 
             $graphServiceClient = new GraphServiceClient($tokenRequestContext);
@@ -77,12 +77,12 @@ class Exchange365Transport extends AbstractTransport
             // scenarios can target a different mailbox than the visible sender.
             // Empty strings from getMailSettingsConfiguration() must be
             // treated as "unset", so use !empty() instead of a bare ?? chain.
-            $graphSenderUserId = !empty($conf['graphSenderUserId'])
+            $graphSenderUserId = (string)(!empty($conf['graphSenderUserId'])
                 ? $conf['graphSenderUserId']
                 : ($graphMessage['from']
                     ?? (!empty($conf['fromEmail']) ? $conf['fromEmail'] : null)
                     ?? $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress']
-                    ?? '');
+                    ?? ''));
 
             if (empty($graphSenderUserId)) {
                 throw new \RuntimeException('No Microsoft Graph sender user ID could be resolved. Configure graphSenderUserId, fromEmail, or TYPO3 MAIL.defaultMailFromAddress.');
@@ -106,30 +106,37 @@ class Exchange365Transport extends AbstractTransport
     }
 
     /**
-     * Get configuration from TypoScript or mail settings
+     * Get configuration by merging TypoScript on top of the mail settings.
+     *
+     * The mail settings are the baseline, so backend, CLI and scheduler contexts
+     * always have a configuration. Frontend TypoScript - which is also how the
+     * site set's settings arrive, since site settings are flattened into
+     * TypoScript constants - overlays individual values on top of it.
      *
      * @return array<string, mixed>
-     * @throws \RuntimeException
      */
     private function getConfiguration(): array
     {
-        // Try to get configuration from TypoScript first
-        $conf = $this->getTypoScriptConfiguration();
+        $conf = $this->getMailSettingsConfiguration();
 
-        // Fallback to mail settings if TypoScript not available
-        if (empty($conf)) {
-            $conf = $this->getMailSettingsConfiguration();
-        }
-
-        if (empty($conf)) {
-            throw new \RuntimeException('Exchange 365 mail configuration not found.');
+        foreach ($this->getTypoScriptConfiguration() ?? [] as $key => $value) {
+            // An empty TypoScript value means "not configured here" and must not
+            // shadow the mail settings. saveToSentItems is exempt: a site setting
+            // of false is flattened into an empty constant and does mean false.
+            if ($key === 'saveToSentItems' || ($value !== '' && $value !== null)) {
+                $conf[$key] = $value;
+            }
         }
 
         return $conf;
     }
 
     /**
-     * Get configuration from TypoScript (TYPO3 12 compatible)
+     * Get configuration from the frontend TypoScript setup.
+     *
+     * Returns null outside the frontend, and also on TYPO3 12.4.0, where the
+     * "frontend.typoscript" request attribute does not exist yet - the caller
+     * then keeps the mail settings baseline.
      *
      * @return array<string, mixed>|null
      */
@@ -142,21 +149,14 @@ class Exchange365Transport extends AbstractTransport
             return null;
         }
 
-        $currentVersion = VersionNumberUtility::getNumericTypo3Version();
-
-        // TYPO3 12.4.1+ uses the new TypoScript API
-        if (version_compare($currentVersion, '12.4.1', '>=')) {
-            $frontendTypoScript = $request->getAttribute('frontend.typoscript');
-            if ($frontendTypoScript === null) {
-                return null;
-            }
-
-            $fullTypoScript = $frontendTypoScript->getSetupArray();
-            return $fullTypoScript['plugin.']['tx_okexchange365mailer.']['settings.']['exchange365.'] ?? null;
+        $frontendTypoScript = $request->getAttribute('frontend.typoscript');
+        if ($frontendTypoScript === null) {
+            return null;
         }
-        // Fallback for older TYPO3 versions (should be removed when TYPO3 11 support is dropped)
-        return $GLOBALS['TSFE']->tmpl->setup['plugin.']['tx_okexchange365mailer.']['settings.']['exchange365.'] ?? null;
 
+        $fullTypoScript = $frontendTypoScript->getSetupArray();
+
+        return $fullTypoScript['plugin.']['tx_okexchange365mailer.']['settings.']['exchange365.'] ?? null;
     }
 
     /**

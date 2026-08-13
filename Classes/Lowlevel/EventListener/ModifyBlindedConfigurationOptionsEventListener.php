@@ -8,6 +8,15 @@ use TYPO3\CMS\Lowlevel\Event\ModifyBlindedConfigurationOptionsEvent;
 
 final class ModifyBlindedConfigurationOptionsEventListener
 {
+    /**
+     * @var list<string>
+     */
+    private const BLINDED_MAIL_SETTINGS = [
+        'transport_exchange365_clientId',
+        'transport_exchange365_tenantId',
+        'transport_exchange365_clientSecret',
+    ];
+
     public function __invoke(ModifyBlindedConfigurationOptionsEvent $event): void
     {
         $options = $event->getBlindedConfigurationOptions();
@@ -20,15 +29,6 @@ final class ModifyBlindedConfigurationOptionsEventListener
     }
 
     /**
-     * @var list<string>
-     */
-    private static $blindedMailSettings = [
-        'transport_exchange365_clientId',
-        'transport_exchange365_tenantId',
-        'transport_exchange365_clientSecret',
-    ];
-
-    /**
      * Blind exchange 365 credentials in ConfigurationOptions
      *
      * @param array<string, mixed> $blindedConfigurationOptions
@@ -36,16 +36,16 @@ final class ModifyBlindedConfigurationOptionsEventListener
      */
     public function modifyBlindedConfigurationOptions(array $blindedConfigurationOptions): array
     {
-        foreach (self::$blindedMailSettings as $key) {
+        foreach (self::BLINDED_MAIL_SETTINGS as $key) {
             if (!empty($GLOBALS['TYPO3_CONF_VARS']['MAIL'][$key])) {
+                $value = (string)$GLOBALS['TYPO3_CONF_VARS']['MAIL'][$key];
                 $blindedConfigurationOptions['TYPO3_CONF_VARS']['MAIL'][$key] =
-                    mb_substr($GLOBALS['TYPO3_CONF_VARS']['MAIL'][$key], 0, 2) .
+                    mb_substr($value, 0, 2) .
                     '******' .
-                    mb_substr($GLOBALS['TYPO3_CONF_VARS']['MAIL'][$key], -2, 2);
+                    mb_substr($value, -2, 2);
             }
         }
 
         return $blindedConfigurationOptions;
     }
-
 }
