@@ -18,8 +18,8 @@
                interlink-shortcode="oliverkroener/ok-exchange365-mailer"
     />
     <project title="Microsoft Exchange 365 Mailer"
-             version="4.2"
-             release="4.2.1"
+             version="4.3"
+             release="4.3.0"
              copyright="since 2024 by Oliver Kroener &amp; Contributors"/>
     <inventory id="t3coreapi" url="https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/"/>
 </guides>

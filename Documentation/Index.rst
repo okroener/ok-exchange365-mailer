@@ -46,21 +46,21 @@ secure, token-based authentication.
     :class: pb-4
     :card-height: 100
 
-    ..  card:: Introduction
+    ..  card:: 📖 Introduction
 
         Learn what this extension does, its features, and system requirements.
 
         ..  card-footer:: :ref:`Learn more <introduction>`
             :button-style: btn btn-primary
 
-    ..  card:: Installation
+    ..  card:: 📦 Installation
 
         Install the extension via Composer and activate it in your TYPO3 project.
 
         ..  card-footer:: :ref:`Get started <installation>`
             :button-style: btn btn-primary
 
-    ..  card:: Microsoft Entra ID Setup
+    ..  card:: 🔑 Microsoft Entra ID Setup
 
         Register an app in Microsoft Entra ID (formerly Azure AD) and configure
         API permissions for Graph API mail sending.
@@ -68,7 +68,7 @@ secure, token-based authentication.
         ..  card-footer:: :ref:`Configure Azure <azure>`
             :button-style: btn btn-primary
 
-    ..  card:: Exchange Online Setup
+    ..  card:: 🛡️ Exchange Online Setup
 
         Configure Application Access Policies to restrict app permissions to
         specific mailboxes using PowerShell.
@@ -76,7 +76,7 @@ secure, token-based authentication.
         ..  card-footer:: :ref:`View guide <exchange-setup>`
             :button-style: btn btn-primary
 
-    ..  card:: Configuration
+    ..  card:: ⚙️ Configuration
 
         Set up the extension via environment variables, TYPO3 settings, or
         TypoScript for frontend form integration.
@@ -84,7 +84,7 @@ secure, token-based authentication.
         ..  card-footer:: :ref:`Configure <configuration>`
             :button-style: btn btn-primary
 
-    ..  card:: FAQ
+    ..  card:: ❓ FAQ
 
         Answers to frequently asked questions about installation, configuration,
         and usage.
@@ -92,7 +92,7 @@ secure, token-based authentication.
         ..  card-footer:: :ref:`Read FAQ <faq>`
             :button-style: btn btn-primary
 
-    ..  card:: Contact
+    ..  card:: ✉️ Contact
 
         Get in touch with the author for support, questions, or contributions.
 

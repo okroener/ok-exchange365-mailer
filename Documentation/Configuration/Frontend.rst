@@ -11,10 +11,23 @@ The Exchange 365 Mailer extension supports frontend email sending through popula
 ..  attention::
     Frontend configuration is **required** for any page that uses forms or email functionality. Without proper TypoScript setup, frontend forms will not be able to send emails through Exchange 365.
 
+..  note::
+    **On TYPO3 v13 and v14, use the** :ref:`site set <sitesets>` **instead.** It provides
+    the same settings under the same names, but activated per site and editable in the
+    backend. This page describes the static TypoScript template, which remains the only
+    option on TYPO3 v12. Do not use both at the same time — see :ref:`sitesets` for
+    details.
+
 Frontend Configuration Overview
 ===============================
 
-Frontend email sending requires the same 5 core parameters as the backend configuration, but they must be configured via **TypoScript** instead of environment variables or LocalConfiguration.php.
+Frontend email sending requires the same core parameters as the backend configuration, but they must be configured via **TypoScript** instead of environment variables or :file:`config/system/settings.php`.
+
+..  note::
+    Every parameter left empty falls back to the corresponding
+    ``$GLOBALS['TYPO3_CONF_VARS']['MAIL']['transport_exchange365_*']`` setting. The two
+    sources are merged per parameter, so you can configure the credentials through
+    environment variables and override only individual values here.
 
 ..  figure:: /_Images/image-frontend.png
     :alt: TYPO3 TypoScript configuration showing Exchange365 frontend parameters
