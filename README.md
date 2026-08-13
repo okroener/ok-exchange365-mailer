@@ -5,7 +5,7 @@
 [![TYPO3 14](https://img.shields.io/badge/TYPO3-14-orange?logo=typo3)](https://get.typo3.org/version/14)
 [![PHP 8.1+](https://img.shields.io/badge/PHP-8.1%2B-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![License: GPL v2+](https://img.shields.io/badge/License-GPL%20v2%2B-blue)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
-[![Version](https://img.shields.io/badge/version-4.2.1-green)](https://github.com/oliverkroener/ok_exchange365_mailer)
+[![Version](https://img.shields.io/badge/version-4.3.0-green)](https://github.com/oliverkroener/ok_exchange365_mailer)
 
 A TYPO3 extension for sending emails via Microsoft Exchange 365 using the MS Graph API instead of SMTP. Uses OAuth 2.0 client credentials flow for secure, token-based authentication.
 
@@ -13,7 +13,7 @@ A TYPO3 extension for sending emails via Microsoft Exchange 365 using the MS Gra
 
 - Send emails through Microsoft Graph API — no SMTP required
 - OAuth 2.0 client credentials flow for server-to-server authentication
-- Supports both backend (environment variables / TYPO3 settings) and frontend (TypoScript) configuration
+- Supports backend (environment variables / TYPO3 settings) and frontend configuration, the latter via a TYPO3 13/14 **site set** or the classic TypoScript static template
 - Compatible with Powermail, TYPO3 Form Framework, and other form extensions
 - Optional saving of sent emails to the sender's "Sent Items" folder
 - Automatic credential blinding in TYPO3's configuration module
@@ -81,7 +81,20 @@ Set the mail transport to `Exchange365Transport` and provide your Azure credenti
 | `TYPO3_CONF_VARS__MAIL__transport_exchange365_graphSenderUserId` | *(optional)* Graph mailbox/user ID used for `/users/{id}/sendMail`. When set, this mailbox sends the message; the visible `From` header still comes from the message or `fromEmail`. Use for *Send As* / *Send On Behalf*. |
 | `TYPO3_CONF_VARS__MAIL__transport_exchange365_saveToSentItems` | `1` to save to Sent Items, `0` to skip (default: `0`) |
 
-**Via TypoScript (for frontend forms):**
+**Via the site set (TYPO3 13 / 14, for frontend forms):**
+
+Add the set to your site configuration, then edit the values under
+*Site Management → Sites → Settings*:
+
+```yaml
+# config/sites/<identifier>/config.yaml
+dependencies:
+  - oliverkroener/ok-exchange365-mailer
+```
+
+**Via TypoScript (TYPO3 12, for frontend forms):**
+
+Include the static template *[kroener.DIGITAL] Exchange 365 Mailer*, then:
 
 ```typoscript
 plugin.tx_okexchange365mailer.settings.exchange365 {
@@ -94,6 +107,11 @@ plugin.tx_okexchange365mailer.settings.exchange365 {
     saveToSentItems = 1
 }
 ```
+
+The environment variables are the baseline for every context (frontend, backend, CLI,
+scheduler). In the frontend, non-empty site-set or TypoScript values override them **per
+setting** — leave a value empty to fall back. Use the site set *or* the static template
+on TYPO3 13/14, never both. Full details: [Site Set Configuration](Documentation/Configuration/SiteSets.rst).
 
 ### Send As / Send On Behalf
 
@@ -135,7 +153,11 @@ Classes/
     └── ModifyBlindedConfigurationOptionsEventListener.php
 Configuration/
 ├── Services.yaml
-├── TCA/Overrides/sys_template.php
+├── Sets/Exchange365Mailer/          # TYPO3 13/14 site set
+│   ├── config.yaml
+│   ├── settings.definitions.yaml
+│   └── setup.typoscript
+├── TCA/Overrides/sys_template.php   # static template (TYPO3 12)
 └── TypoScript/
     ├── constants.typoscript
     └── setup.typoscript
