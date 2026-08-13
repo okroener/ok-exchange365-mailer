@@ -4,7 +4,7 @@
     "homepage": "https://www.oliver-kroener.de",
     "type": "typo3-cms-extension",
     "license": "GPL-2.0-or-later",
-    "version": "4.2.1",
+    "version": "4.3.0",
     "authors": [
         {
             "name": "Oliver Kroener",
